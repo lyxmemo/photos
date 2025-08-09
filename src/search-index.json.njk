@@ -1,0 +1,18 @@
+---
+permalink: /search-index.json
+---
+[
+  {%- for photo in collections.photos -%}
+  {
+    "url": "{{ photo.url }}",
+    "name": "{{ photo.data.name }}",
+    "date": "{{ photo.data.date }}",
+    "location": "{{ photo.data.location }}",
+    "imageUrl": "{{ photo.data.imageUrl }}",
+    "tags": {{ photo.data.tags | dump | safe }},
+    "latitude": {{ photo.data.latitude }},
+    "longitude": {{ photo.data.longitude }}
+  }
+  {%- if not loop.last -%},{%- endif -%}
+  {%- endfor -%}
+]

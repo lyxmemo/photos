@@ -1,0 +1,30 @@
+{
+  "name": "photo-gallery",
+  "version": "1.0.0",
+  "description": "A modern, high-performance, scalable static photo gallery website.",
+  "main": "eleventy.config.js",
+  "scripts": {
+    "build:css": "npx postcss src/css/input.css -o _site/css/style.css",
+    "start": "npm run build:css && eleventy --serve",
+    "build": "npm run build:css && eleventy"
+  },
+  "keywords": [
+    "eleventy",
+    "tailwindcss",
+    "alpinejs",
+    "fuse.js"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@11ty/eleventy": "^2.0.1",
+    "alpinejs": "^3.13.3",
+    "fuse.js": "^7.0.0"
+  },
+  "devDependencies": {
+    "autoprefixer": "^10.4.17",
+    "postcss": "^8.4.33",
+    "postcss-cli": "^11.0.0",
+    "tailwindcss": "^3.4.1"
+  }
+}
