@@ -41,7 +41,7 @@ function generatePhotoContent(index) {
 name: "${getRandomItem(photoNames)} #${index + 1}"
 date: ${getRandomDate()}
 location: "${getRandomItem(locations)}"
-imageUrl: "/images/placeholder.jpg"
+imageUrl: "/images/alaska-trip.png"
 tags:
   - photos
 ${getRandomTags().map(tag => `  - ${tag}`).join('\n')}

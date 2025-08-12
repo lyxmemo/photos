@@ -2,7 +2,7 @@
 layout: base.njk
 ---
 
-<div x-data="photoGallery()" x-init="init()">
+<div x-data="photoGallery()" x-init="init()" @keydown.window="handleKeydown($event)">
     <div class="p-4 bg-white shadow-md rounded-lg mb-4">
         <input type="text" x-model="searchQuery" @input.debounce.300ms="filterPhotos()" placeholder="Search photos..." class="w-full p-2 border rounded">
         <div class="mt-4">
@@ -16,12 +16,9 @@ layout: base.njk
 
     <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
         <template x-for="photo in filteredPhotos" :key="photo.url">
-            <div class="bg-white rounded-lg shadow-md overflow-hidden">
+            <div class="bg-white rounded-lg shadow-md overflow-hidden cursor-pointer transition-transform hover:scale-105" @click="expandPhoto(photo)">
                 <img :src="photo.imageUrl" :alt="photo.name" class="w-full h-48 object-cover">
                 <div class="p-4">
-                    <h3 class="text-lg font-bold" x-text="photo.name"></h3>
-                    <p class="text-sm text-gray-600" x-text="photo.location"></p>
-                    <p class="text-sm text-gray-500" x-text="photo.date"></p>
                     <div class="mt-2">
                         <template x-for="tag in photo.tags" :key="tag">
                             <span class="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2" x-text="tag"></span>
@@ -30,5 +27,48 @@ layout: base.njk
                 </div>
             </div>
         </template>
+    </div>
+
+    <!-- Modal for expanded photo -->
+    <div x-show="showModal" 
+         x-transition:enter="transition ease-out duration-300" 
+         x-transition:enter-start="opacity-0" 
+         x-transition:enter-end="opacity-100" 
+         x-transition:leave="transition ease-in duration-200" 
+         x-transition:leave-start="opacity-100" 
+         x-transition:leave-end="opacity-0"
+         class="fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center z-50"
+         @click="handleModalClick($event)"
+         style="display: none;">
+        
+        <div class="relative max-w-7xl max-h-full p-4">
+            <!-- Close button -->
+            <button @click="closeModal()" 
+                    class="absolute top-2 right-2 text-white hover:text-gray-300 text-3xl z-10 bg-black bg-opacity-50 rounded-full w-12 h-12 flex items-center justify-center">
+                ×
+            </button>
+            
+            <!-- Expanded image -->
+            <template x-if="expandedPhoto">
+                <div class="flex flex-col items-center">
+                    <img :src="expandedPhoto.imageUrl" 
+                         :alt="expandedPhoto.name" 
+                         class="max-w-full max-h-[80vh] object-contain rounded-lg shadow-2xl">
+                    
+                    <!-- Photo info -->
+                    <div class="mt-4 text-center text-white">
+                        <h2 class="text-xl font-bold mb-2" x-text="expandedPhoto.name"></h2>
+                        <template x-if="expandedPhoto.location">
+                            <p class="text-gray-300 mb-2" x-text="expandedPhoto.location"></p>
+                        </template>
+                        <div class="flex flex-wrap justify-center gap-2">
+                            <template x-for="tag in expandedPhoto.tags" :key="tag">
+                                <span class="inline-block bg-white bg-opacity-20 rounded-full px-3 py-1 text-sm text-white" x-text="tag"></span>
+                            </template>
+                        </div>
+                    </div>
+                </div>
+            </template>
+        </div>
     </div>
 </div>
