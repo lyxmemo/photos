@@ -8,7 +8,7 @@ permalink: /search-index.json
     "name": "{{ photo.data.name }}",
     "date": "{{ photo.data.date }}",
     "location": "{{ photo.data.location }}",
-    "imageUrl": "{{ photo.data.imageUrl }}",
+    "imageUrl": "{{ photo.data.imageUrl | url }}",
     "tags": {{ photo.data.tags | dump | safe }},
     "latitude": {{ photo.data.latitude }},
     "longitude": {{ photo.data.longitude }}
