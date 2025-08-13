@@ -1,4 +1,4 @@
-function photoGallery() {
+function photoGallery(searchIndexPath) {
     return {
         allPhotos: [],
         filteredPhotos: [],
@@ -10,7 +10,7 @@ function photoGallery() {
         showModal: false,
 
         init() {
-            fetch('/search-index.json')
+            fetch(searchIndexPath)
                 .then(response => response.json())
                 .then(data => {
                     this.allPhotos = data;

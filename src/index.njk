@@ -2,7 +2,7 @@
 layout: base.njk
 ---
 
-<div x-data="photoGallery()" x-init="init()" @keydown.window="handleKeydown($event)">
+<div x-data="photoGallery('{{ '/search-index.json' | url }}')" x-init="init()" @keydown.window="handleKeydown($event)">
     <div class="p-4 bg-white shadow-md rounded-lg mb-4">
         <input type="text" x-model="searchQuery" @input.debounce.300ms="filterPhotos()" placeholder="Search photos..." class="w-full p-2 border rounded">
         <div class="mt-4">
