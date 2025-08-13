@@ -47,7 +47,7 @@ jobs:
         with:
           # This should be the directory that your build command generates the static files in.
           # Common names are 'build', 'dist', or 'public'. Change if necessary.
-          path: './build' 
+          path: './_site' 
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
