@@ -15,7 +15,7 @@ function main() {
 
   // Stage photo data and images
   runVisible("git add data/photos.json");
-  runVisible("git add public/images/");
+  runVisible("git add data/images/");
 
   // Check if there are changes to commit
   try {

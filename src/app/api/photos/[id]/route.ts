@@ -51,7 +51,7 @@ export async function DELETE(
 
   // Delete the image file
   try {
-    const filePath = path.join(process.cwd(), "public", "images", photo.filename);
+    const filePath = path.join(process.cwd(), "data", "images", photo.filename);
     await unlink(filePath);
   } catch {
     // File may not exist, continue

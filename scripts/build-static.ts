@@ -1,11 +1,11 @@
-import { cpSync, rmSync, existsSync } from "fs";
+import { cpSync, rmSync, existsSync, mkdirSync } from "fs";
 import { execSync } from "child_process";
 import path from "path";
 
 const ROOT = process.cwd();
 
 // During static export, temporarily hide routes that only work in dev mode:
-// - /api/* (server endpoints for admin CRUD)
+// - /api/* (server endpoints for admin CRUD + image serving)
 // - /admin/* (upload & manage pages)
 // - /photo/[id] (dynamic route — photos open in modal on static site)
 const dirs = [
@@ -42,6 +42,17 @@ function restore() {
   }
 }
 
+function copyImages() {
+  const imagesDir = path.join(ROOT, "data", "images");
+  const outImagesDir = path.join(ROOT, "out", "images");
+
+  if (existsSync(imagesDir)) {
+    console.log("Copying images to out/images/");
+    mkdirSync(outImagesDir, { recursive: true });
+    cpSync(imagesDir, outImagesDir, { recursive: true });
+  }
+}
+
 hide();
 try {
   execSync("npx next build", {
@@ -49,6 +60,10 @@ try {
     stdio: "inherit",
     env: { ...process.env, STATIC_EXPORT: "true" },
   });
+
+  // Copy images from data/images/ into the static output
+  copyImages();
+
   console.log("\nStatic site built successfully in out/");
 } finally {
   restore();
