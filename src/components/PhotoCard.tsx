@@ -17,7 +17,7 @@ export default function PhotoCard({ title, filename, tags, createdAt, date, peop
     <div className="group block overflow-hidden rounded-xl border border-zinc-200 bg-white transition hover:shadow-lg dark:border-zinc-800 dark:bg-zinc-950">
       <div className="relative aspect-square overflow-hidden bg-zinc-100 dark:bg-zinc-900">
         <Image
-          src={`/images/${filename}`}
+          src={`${process.env.NEXT_PUBLIC_BASE_PATH || ""}/images/${filename}`}
           alt={title}
           fill
           className="object-cover transition-transform group-hover:scale-105"
