@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import PhotoCard from "@/components/PhotoCard";
 import PhotoModal from "@/components/PhotoModal";
 import SearchBar from "@/components/SearchBar";
@@ -29,11 +29,15 @@ interface GalleryProps {
   tags: Tag[];
 }
 
+const BATCH = 12;
+
 export default function Gallery({ photos, tags }: GalleryProps) {
   const [search, setSearch] = useState("");
   const [selectedTag, setSelectedTag] = useState("");
-  const [sort, setSort] = useState("newest");
+  const [sort, setSort] = useState("date_newest");
   const [selectedPhoto, setSelectedPhoto] = useState<Photo | null>(null);
+  const [displayCount, setDisplayCount] = useState(BATCH);
+  const sentinelRef = useRef<HTMLDivElement>(null);
 
   const filteredPhotos = useMemo(() => {
     let result = photos;
@@ -72,63 +76,95 @@ export default function Gallery({ photos, tags }: GalleryProps) {
     });
   }, [photos, search, selectedTag, sort]);
 
+  // Reset display count when filters change
+  useEffect(() => {
+    setDisplayCount(BATCH);
+  }, [search, selectedTag, sort]);
+
+  // Infinite scroll via IntersectionObserver
+  useEffect(() => {
+    const sentinel = sentinelRef.current;
+    if (!sentinel) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setDisplayCount((prev) => Math.min(prev + BATCH, filteredPhotos.length));
+        }
+      },
+      { rootMargin: "400px" }
+    );
+    observer.observe(sentinel);
+    return () => observer.disconnect();
+  }, [filteredPhotos.length]);
+
+  const visiblePhotos = filteredPhotos.slice(0, displayCount);
+  const hasMore = displayCount < filteredPhotos.length;
+
   const handleSearch = useCallback((q: string) => {
     setSearch(q);
   }, []);
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <h1 className="text-3xl font-bold text-zinc-900 dark:text-white">Gallery</h1>
-        <div className="flex items-center gap-3">
-          <label className="text-sm text-zinc-500 dark:text-zinc-400">Sort:</label>
-          <select
-            value={sort}
-            onChange={(e) => setSort(e.target.value)}
-            className="rounded-lg border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-900 dark:border-zinc-700 dark:bg-zinc-900 dark:text-white"
-          >
-            <option value="newest">Upload newest</option>
-            <option value="oldest">Upload oldest</option>
-            <option value="date_newest">Photo date (newest)</option>
-            <option value="date_oldest">Photo date (oldest)</option>
-            <option value="title">Title A-Z</option>
-          </select>
+    <div className="space-y-4">
+      {/* Filter bar */}
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4">
+        <div className="flex-1">
+          <SearchBar onSearch={handleSearch} />
         </div>
+        <select
+          value={sort}
+          onChange={(e) => setSort(e.target.value)}
+          className="h-10 rounded-full border border-zinc-200 bg-white px-4 text-sm text-zinc-700 outline-none transition focus:border-zinc-400 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-300 dark:focus:border-zinc-500"
+        >
+          <option value="date_newest">Newest first</option>
+          <option value="date_oldest">Oldest first</option>
+          <option value="newest">Recently added</option>
+          <option value="title">Title A-Z</option>
+        </select>
       </div>
-
-      <SearchBar onSearch={handleSearch} />
 
       {tags.length > 0 && (
         <TagFilter tags={tags} selectedTag={selectedTag} onSelectTag={setSelectedTag} />
       )}
 
+      {/* Masonry grid */}
       {filteredPhotos.length === 0 ? (
-        <div className="py-20 text-center text-zinc-500 dark:text-zinc-400">
+        <div className="py-24 text-center text-zinc-400 dark:text-zinc-500">
           No photos found.{" "}
           {search || selectedTag
             ? "Try adjusting your filters."
             : "Upload some photos to get started!"}
         </div>
       ) : (
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-          {filteredPhotos.map((photo) => (
-            <div
-              key={photo.id}
-              onClick={() => setSelectedPhoto(photo)}
-              className="cursor-pointer"
-            >
-              <PhotoCard
-                title={photo.title}
-                filename={photo.filename}
-                tags={photo.tags}
-                createdAt={photo.createdAt}
-                date={photo.date}
-                people={photo.people}
-                location={photo.location}
-              />
+        <>
+          <div className="masonry">
+            {visiblePhotos.map((photo) => (
+              <div
+                key={photo.id}
+                className="masonry-item cursor-pointer"
+                onClick={() => setSelectedPhoto(photo)}
+              >
+                <PhotoCard
+                  title={photo.title}
+                  filename={photo.filename}
+                  tags={photo.tags}
+                  date={photo.date}
+                  people={photo.people}
+                  location={photo.location}
+                />
+              </div>
+            ))}
+          </div>
+
+          {/* Infinite scroll sentinel */}
+          <div ref={sentinelRef} className="h-px" />
+
+          {hasMore && (
+            <div className="flex justify-center py-8">
+              <div className="h-6 w-6 animate-spin rounded-full border-2 border-zinc-300 border-t-zinc-600 dark:border-zinc-600 dark:border-t-zinc-300" />
             </div>
-          ))}
-        </div>
+          )}
+        </>
       )}
 
       {selectedPhoto && (
