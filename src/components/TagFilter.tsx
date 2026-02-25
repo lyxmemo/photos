@@ -1,9 +1,8 @@
 "use client";
 
 interface Tag {
-  id: string;
   name: string;
-  _count: { photos: number };
+  count: number;
 }
 
 interface TagFilterProps {
@@ -27,7 +26,7 @@ export default function TagFilter({ tags, selectedTag, onSelectTag }: TagFilterP
       </button>
       {tags.map((tag) => (
         <button
-          key={tag.id}
+          key={tag.name}
           onClick={() => onSelectTag(tag.name)}
           className={`rounded-full px-3 py-1.5 text-sm font-medium transition ${
             selectedTag === tag.name
@@ -36,7 +35,7 @@ export default function TagFilter({ tags, selectedTag, onSelectTag }: TagFilterP
           }`}
         >
           {tag.name}
-          <span className="ml-1 text-xs opacity-70">({tag._count.photos})</span>
+          <span className="ml-1 text-xs opacity-70">({tag.count})</span>
         </button>
       ))}
     </div>

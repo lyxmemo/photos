@@ -85,7 +85,10 @@ export default function UploadPage() {
               : "border-zinc-300 bg-white hover:border-zinc-400 dark:border-zinc-700 dark:bg-zinc-900"
           }`}
           onClick={() => fileInputRef.current?.click()}
-          onDragOver={(e) => { e.preventDefault(); setDragActive(true); }}
+          onDragOver={(e) => {
+            e.preventDefault();
+            setDragActive(true);
+          }}
           onDragLeave={() => setDragActive(false)}
           onDrop={handleDrop}
         >
@@ -93,8 +96,18 @@ export default function UploadPage() {
             <img src={preview} alt="Preview" className="max-h-64 rounded-lg object-contain" />
           ) : (
             <div className="text-center">
-              <svg className="mx-auto h-12 w-12 text-zinc-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 16v-8m0 0l-3 3m3-3l3 3M3 16.5V18a2.25 2.25 0 002.25 2.25h13.5A2.25 2.25 0 0021 18v-1.5M6.75 12l-1.5 1.5M17.25 12l1.5 1.5" />
+              <svg
+                className="mx-auto h-12 w-12 text-zinc-400"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={1.5}
+                  d="M12 16v-8m0 0l-3 3m3-3l3 3M3 16.5V18a2.25 2.25 0 002.25 2.25h13.5A2.25 2.25 0 0021 18v-1.5M6.75 12l-1.5 1.5M17.25 12l1.5 1.5"
+                />
               </svg>
               <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
                 Drag & drop an image, or click to browse

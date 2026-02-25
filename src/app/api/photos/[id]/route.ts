@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { auth } from "@/lib/auth";
-import { prisma } from "@/lib/prisma";
+import { getPhoto, updatePhoto, deletePhoto } from "@/lib/data";
 import { unlink } from "fs/promises";
 import path from "path";
 
@@ -9,10 +8,7 @@ export async function GET(
   { params }: { params: Promise<{ id: string }> }
 ) {
   const { id } = await params;
-  const photo = await prisma.photo.findUnique({
-    where: { id },
-    include: { tags: true, user: { select: { username: true } } },
-  });
+  const photo = getPhoto(id);
 
   if (!photo) {
     return NextResponse.json({ error: "Not found" }, { status: 404 });
@@ -25,32 +21,19 @@ export async function PATCH(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const session = await auth();
-  if (!session?.user?.id) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
-
   const { id } = await params;
   const body = await req.json();
   const { title, description, tags } = body;
 
-  const photo = await prisma.photo.update({
-    where: { id },
-    data: {
-      ...(title !== undefined && { title }),
-      ...(description !== undefined && { description }),
-      ...(tags !== undefined && {
-        tags: {
-          set: [],
-          connectOrCreate: (tags as string[]).map((name: string) => ({
-            where: { name },
-            create: { name },
-          })),
-        },
-      }),
-    },
-    include: { tags: true },
+  const photo = updatePhoto(id, {
+    ...(title !== undefined && { title }),
+    ...(description !== undefined && { description }),
+    ...(tags !== undefined && { tags }),
   });
+
+  if (!photo) {
+    return NextResponse.json({ error: "Not found" }, { status: 404 });
+  }
 
   return NextResponse.json(photo);
 }
@@ -59,27 +42,20 @@ export async function DELETE(
   _req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const session = await auth();
-  if (!session?.user?.id) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
-
   const { id } = await params;
-  const photo = await prisma.photo.findUnique({ where: { id } });
+  const photo = deletePhoto(id);
 
   if (!photo) {
     return NextResponse.json({ error: "Not found" }, { status: 404 });
   }
 
-  // Delete the file
+  // Delete the image file
   try {
-    const filePath = path.join(process.cwd(), "public", "uploads", photo.filename);
+    const filePath = path.join(process.cwd(), "public", "images", photo.filename);
     await unlink(filePath);
   } catch {
     // File may not exist, continue
   }
-
-  await prisma.photo.delete({ where: { id } });
 
   return NextResponse.json({ success: true });
 }

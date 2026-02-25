@@ -1,40 +1,23 @@
-"use client";
-
 import Image from "next/image";
 import Link from "next/link";
-import { useParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { getPhoto, getPhotos } from "@/lib/data";
+import { notFound } from "next/navigation";
 
-interface Photo {
-  id: string;
-  title: string;
-  description: string | null;
-  filename: string;
-  tags: { id: string; name: string }[];
-  createdAt: string;
-  user?: { username: string };
+export async function generateStaticParams() {
+  const photos = getPhotos();
+  return photos.map((p) => ({ id: p.id }));
 }
 
-export default function PhotoDetailPage() {
-  const { id } = useParams();
-  const [photo, setPhoto] = useState<Photo | null>(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    fetch(`/api/photos/${id}`)
-      .then((res) => res.json())
-      .then((data) => {
-        setPhoto(data);
-        setLoading(false);
-      });
-  }, [id]);
-
-  if (loading) {
-    return <div className="py-20 text-center text-zinc-500">Loading...</div>;
-  }
+export default async function PhotoDetailPage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  const { id } = await params;
+  const photo = getPhoto(id);
 
   if (!photo) {
-    return <div className="py-20 text-center text-zinc-500">Photo not found</div>;
+    notFound();
   }
 
   return (
@@ -52,7 +35,7 @@ export default function PhotoDetailPage() {
       <div className="overflow-hidden rounded-2xl border border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-900">
         <div className="relative aspect-video w-full bg-zinc-100 dark:bg-zinc-800">
           <Image
-            src={`/uploads/${photo.filename}`}
+            src={`/images/${photo.filename}`}
             alt={photo.title}
             fill
             className="object-contain"
@@ -68,19 +51,18 @@ export default function PhotoDetailPage() {
             <p className="mt-3 text-lg text-zinc-600 dark:text-zinc-400">{photo.description}</p>
           )}
 
-          <div className="mt-4 flex items-center gap-4 text-sm text-zinc-500 dark:text-zinc-400">
-            <span>{new Date(photo.createdAt).toLocaleDateString()}</span>
-            {photo.user && <span>Uploaded by {photo.user.username}</span>}
-          </div>
+          <p className="mt-4 text-sm text-zinc-500 dark:text-zinc-400">
+            {new Date(photo.createdAt).toLocaleDateString()}
+          </p>
 
           {photo.tags.length > 0 && (
             <div className="mt-6 flex flex-wrap gap-2">
               {photo.tags.map((tag) => (
                 <span
-                  key={tag.id}
+                  key={tag}
                   className="rounded-full bg-zinc-100 px-3 py-1 text-sm font-medium text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300"
                 >
-                  {tag.name}
+                  {tag}
                 </span>
               ))}
             </div>

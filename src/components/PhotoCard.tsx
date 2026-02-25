@@ -5,7 +5,7 @@ import Image from "next/image";
 interface PhotoCardProps {
   title: string;
   filename: string;
-  tags: { id: string; name: string }[];
+  tags: string[];
   createdAt: string;
 }
 
@@ -14,7 +14,7 @@ export default function PhotoCard({ title, filename, tags, createdAt }: PhotoCar
     <div className="group block overflow-hidden rounded-xl border border-zinc-200 bg-white transition hover:shadow-lg dark:border-zinc-800 dark:bg-zinc-950">
       <div className="relative aspect-square overflow-hidden bg-zinc-100 dark:bg-zinc-900">
         <Image
-          src={`/uploads/${filename}`}
+          src={`/images/${filename}`}
           alt={title}
           fill
           className="object-cover transition-transform group-hover:scale-105"
@@ -30,10 +30,10 @@ export default function PhotoCard({ title, filename, tags, createdAt }: PhotoCar
           <div className="mt-2 flex flex-wrap gap-1">
             {tags.map((tag) => (
               <span
-                key={tag.id}
+                key={tag}
                 className="inline-block rounded-full bg-zinc-100 px-2 py-0.5 text-xs text-zinc-600 dark:bg-zinc-800 dark:text-zinc-400"
               >
-                {tag.name}
+                {tag}
               </span>
             ))}
           </div>

@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { auth } from "@/lib/auth";
-import { prisma } from "@/lib/prisma";
+import { getPhotos, addPhoto } from "@/lib/data";
 
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
@@ -8,42 +7,33 @@ export async function GET(req: NextRequest) {
   const tag = searchParams.get("tag") || "";
   const sort = searchParams.get("sort") || "newest";
 
-  const where: Record<string, unknown> = {};
+  let photos = getPhotos();
 
   if (search) {
-    where.OR = [
-      { title: { contains: search, mode: "insensitive" } },
-      { description: { contains: search, mode: "insensitive" } },
-      { tags: { some: { name: { contains: search, mode: "insensitive" } } } },
-    ];
+    const q = search.toLowerCase();
+    photos = photos.filter(
+      (p) =>
+        p.title.toLowerCase().includes(q) ||
+        p.description?.toLowerCase().includes(q) ||
+        p.tags.some((t) => t.toLowerCase().includes(q))
+    );
   }
 
   if (tag) {
-    where.tags = { some: { name: tag } };
+    photos = photos.filter((p) => p.tags.includes(tag));
   }
 
-  const orderBy =
-    sort === "oldest"
-      ? { createdAt: "asc" as const }
-      : sort === "title"
-        ? { title: "asc" as const }
-        : { createdAt: "desc" as const };
-
-  const photos = await prisma.photo.findMany({
-    where,
-    include: { tags: true, user: { select: { username: true } } },
-    orderBy,
+  photos.sort((a, b) => {
+    if (sort === "oldest")
+      return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
+    if (sort === "title") return a.title.localeCompare(b.title);
+    return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
   });
 
   return NextResponse.json(photos);
 }
 
 export async function POST(req: NextRequest) {
-  const session = await auth();
-  if (!session?.user?.id) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
-
   const body = await req.json();
   const { title, description, filename, tags } = body;
 
@@ -54,20 +44,11 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  const photo = await prisma.photo.create({
-    data: {
-      title,
-      description: description || null,
-      filename,
-      userId: session.user.id,
-      tags: {
-        connectOrCreate: (tags as string[] || []).map((name: string) => ({
-          where: { name },
-          create: { name },
-        })),
-      },
-    },
-    include: { tags: true },
+  const photo = addPhoto({
+    title,
+    description: description || null,
+    filename,
+    tags: tags || [],
   });
 
   return NextResponse.json(photo, { status: 201 });

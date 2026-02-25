@@ -8,7 +8,7 @@ interface Photo {
   title: string;
   description: string | null;
   filename: string;
-  tags: { id: string; name: string }[];
+  tags: string[];
   createdAt: string;
 }
 
@@ -36,7 +36,7 @@ export default function ManagePage() {
     setEditingId(photo.id);
     setEditTitle(photo.title);
     setEditDescription(photo.description || "");
-    setEditTags(photo.tags.map((t) => t.name).join(", "));
+    setEditTags(photo.tags.join(", "));
   };
 
   const saveEdit = async () => {
@@ -89,7 +89,7 @@ export default function ManagePage() {
             >
               <div className="relative h-24 w-24 flex-shrink-0 overflow-hidden rounded-lg bg-zinc-100 dark:bg-zinc-800">
                 <Image
-                  src={`/uploads/${photo.filename}`}
+                  src={`/images/${photo.filename}`}
                   alt={photo.title}
                   fill
                   className="object-cover"
@@ -144,10 +144,10 @@ export default function ManagePage() {
                       <div className="mt-1 flex flex-wrap gap-1">
                         {photo.tags.map((tag) => (
                           <span
-                            key={tag.id}
+                            key={tag}
                             className="rounded-full bg-zinc-100 px-2 py-0.5 text-xs text-zinc-600 dark:bg-zinc-800 dark:text-zinc-400"
                           >
-                            {tag.name}
+                            {tag}
                           </span>
                         ))}
                       </div>

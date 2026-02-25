@@ -9,9 +9,8 @@ interface PhotoModalProps {
     title: string;
     description?: string | null;
     filename: string;
-    tags: { id: string; name: string }[];
+    tags: string[];
     createdAt: string;
-    user?: { username: string };
   };
   onClose: () => void;
 }
@@ -49,7 +48,7 @@ export default function PhotoModal({ photo, onClose }: PhotoModalProps) {
 
         <div className="relative aspect-video w-full min-w-[300px] max-w-4xl bg-zinc-100 dark:bg-zinc-800 sm:min-w-[500px]">
           <Image
-            src={`/uploads/${photo.filename}`}
+            src={`/images/${photo.filename}`}
             alt={photo.title}
             fill
             className="object-contain"
@@ -62,18 +61,17 @@ export default function PhotoModal({ photo, onClose }: PhotoModalProps) {
           {photo.description && (
             <p className="mt-2 text-zinc-600 dark:text-zinc-400">{photo.description}</p>
           )}
-          <div className="mt-3 flex items-center gap-4 text-sm text-zinc-500 dark:text-zinc-400">
-            <span>{new Date(photo.createdAt).toLocaleDateString()}</span>
-            {photo.user && <span>by {photo.user.username}</span>}
-          </div>
+          <p className="mt-3 text-sm text-zinc-500 dark:text-zinc-400">
+            {new Date(photo.createdAt).toLocaleDateString()}
+          </p>
           {photo.tags.length > 0 && (
             <div className="mt-4 flex flex-wrap gap-2">
               {photo.tags.map((tag) => (
                 <span
-                  key={tag.id}
+                  key={tag}
                   className="rounded-full bg-zinc-100 px-3 py-1 text-sm text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300"
                 >
-                  {tag.name}
+                  {tag}
                 </span>
               ))}
             </div>
