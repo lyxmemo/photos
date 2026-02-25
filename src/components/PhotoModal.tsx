@@ -51,7 +51,7 @@ export default function PhotoModal({ photo, onClose }: PhotoModalProps) {
 
         <div className="relative aspect-video w-full min-w-[300px] max-w-4xl bg-zinc-100 dark:bg-zinc-800 sm:min-w-[500px]">
           <Image
-            src={`/images/${photo.filename}`}
+            src={`${process.env.NEXT_PUBLIC_BASE_PATH || ""}/images/${photo.filename}`}
             alt={photo.title}
             fill
             className="object-contain"

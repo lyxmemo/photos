@@ -35,7 +35,7 @@ export default async function PhotoDetailPage({
       <div className="overflow-hidden rounded-2xl border border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-900">
         <div className="relative aspect-video w-full bg-zinc-100 dark:bg-zinc-800">
           <Image
-            src={`/images/${photo.filename}`}
+            src={`${process.env.NEXT_PUBLIC_BASE_PATH || ""}/images/${photo.filename}`}
             alt={photo.title}
             fill
             className="object-contain"
