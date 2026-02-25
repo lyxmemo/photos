@@ -9,6 +9,9 @@ interface Photo {
   description: string | null;
   filename: string;
   tags: string[];
+  date: string | null;
+  people: string[];
+  location: string | null;
   createdAt: string;
 }
 
@@ -19,6 +22,9 @@ export default function ManagePage() {
   const [editTitle, setEditTitle] = useState("");
   const [editDescription, setEditDescription] = useState("");
   const [editTags, setEditTags] = useState("");
+  const [editDate, setEditDate] = useState("");
+  const [editPeople, setEditPeople] = useState("");
+  const [editLocation, setEditLocation] = useState("");
   const [saving, setSaving] = useState(false);
 
   const fetchPhotos = async () => {
@@ -37,6 +43,9 @@ export default function ManagePage() {
     setEditTitle(photo.title);
     setEditDescription(photo.description || "");
     setEditTags(photo.tags.join(", "));
+    setEditDate(photo.date || "");
+    setEditPeople(photo.people.join(", "));
+    setEditLocation(photo.location || "");
   };
 
   const saveEdit = async () => {
@@ -44,6 +53,10 @@ export default function ManagePage() {
     setSaving(true);
 
     const tags = editTags
+      .split(",")
+      .map((t) => t.trim())
+      .filter(Boolean);
+    const people = editPeople
       .split(",")
       .map((t) => t.trim())
       .filter(Boolean);
@@ -55,6 +68,9 @@ export default function ManagePage() {
         title: editTitle,
         description: editDescription || null,
         tags,
+        date: editDate || null,
+        people,
+        location: editLocation || null,
       }),
     });
 
@@ -117,6 +133,24 @@ export default function ManagePage() {
                     className="rounded border border-zinc-300 px-2 py-1 text-sm dark:border-zinc-700 dark:bg-zinc-800 dark:text-white"
                     placeholder="Tags (comma-separated)"
                   />
+                  <input
+                    value={editDate}
+                    onChange={(e) => setEditDate(e.target.value)}
+                    className="rounded border border-zinc-300 px-2 py-1 text-sm dark:border-zinc-700 dark:bg-zinc-800 dark:text-white"
+                    placeholder="Date (e.g. 1946, 1946-01, 1946-01-01)"
+                  />
+                  <input
+                    value={editPeople}
+                    onChange={(e) => setEditPeople(e.target.value)}
+                    className="rounded border border-zinc-300 px-2 py-1 text-sm dark:border-zinc-700 dark:bg-zinc-800 dark:text-white"
+                    placeholder="People (comma-separated)"
+                  />
+                  <input
+                    value={editLocation}
+                    onChange={(e) => setEditLocation(e.target.value)}
+                    className="rounded border border-zinc-300 px-2 py-1 text-sm dark:border-zinc-700 dark:bg-zinc-800 dark:text-white"
+                    placeholder="Location"
+                  />
                   <div className="flex gap-2">
                     <button
                       onClick={saveEdit}
@@ -151,6 +185,17 @@ export default function ManagePage() {
                           </span>
                         ))}
                       </div>
+                    )}
+                    {(photo.date || photo.location || photo.people.length > 0) && (
+                      <p className="mt-1 text-xs text-zinc-400 dark:text-zinc-500">
+                        {[
+                          photo.date,
+                          photo.location,
+                          photo.people.length > 0 ? photo.people.join(", ") : null,
+                        ]
+                          .filter(Boolean)
+                          .join(" · ")}
+                      </p>
                     )}
                   </div>
                   <div className="flex gap-2">

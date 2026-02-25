@@ -52,8 +52,20 @@ export default async function PhotoDetailPage({
           )}
 
           <p className="mt-4 text-sm text-zinc-500 dark:text-zinc-400">
-            {new Date(photo.createdAt).toLocaleDateString()}
+            {photo.date || new Date(photo.createdAt).toLocaleDateString()}
           </p>
+
+          {photo.location && (
+            <p className="mt-2 text-sm text-zinc-500 dark:text-zinc-400">
+              Location: {photo.location}
+            </p>
+          )}
+
+          {photo.people.length > 0 && (
+            <p className="mt-2 text-sm text-zinc-500 dark:text-zinc-400">
+              People: {photo.people.join(", ")}
+            </p>
+          )}
 
           {photo.tags.length > 0 && (
             <div className="mt-6 flex flex-wrap gap-2">

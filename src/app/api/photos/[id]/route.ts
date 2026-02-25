@@ -23,12 +23,15 @@ export async function PATCH(
 ) {
   const { id } = await params;
   const body = await req.json();
-  const { title, description, tags } = body;
+  const { title, description, tags, date, people, location } = body;
 
   const photo = updatePhoto(id, {
     ...(title !== undefined && { title }),
     ...(description !== undefined && { description }),
     ...(tags !== undefined && { tags }),
+    ...(date !== undefined && { date }),
+    ...(people !== undefined && { people }),
+    ...(location !== undefined && { location }),
   });
 
   if (!photo) {

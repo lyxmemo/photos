@@ -11,6 +11,9 @@ interface PhotoModalProps {
     filename: string;
     tags: string[];
     createdAt: string;
+    date?: string | null;
+    people?: string[];
+    location?: string | null;
   };
   onClose: () => void;
 }
@@ -62,8 +65,18 @@ export default function PhotoModal({ photo, onClose }: PhotoModalProps) {
             <p className="mt-2 text-zinc-600 dark:text-zinc-400">{photo.description}</p>
           )}
           <p className="mt-3 text-sm text-zinc-500 dark:text-zinc-400">
-            {new Date(photo.createdAt).toLocaleDateString()}
+            {photo.date || new Date(photo.createdAt).toLocaleDateString()}
           </p>
+          {photo.location && (
+            <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
+              Location: {photo.location}
+            </p>
+          )}
+          {photo.people && photo.people.length > 0 && (
+            <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
+              People: {photo.people.join(", ")}
+            </p>
+          )}
           {photo.tags.length > 0 && (
             <div className="mt-4 flex flex-wrap gap-2">
               {photo.tags.map((tag) => (
