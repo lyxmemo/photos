@@ -5,6 +5,7 @@ import PhotoCard from "@/components/PhotoCard";
 import PhotoModal from "@/components/PhotoModal";
 import SearchBar from "@/components/SearchBar";
 import TagFilter from "@/components/TagFilter";
+import { parseDateForSort } from "@/lib/dateUtils";
 
 interface Photo {
   id: string;
@@ -12,6 +13,9 @@ interface Photo {
   description: string | null;
   filename: string;
   tags: string[];
+  date: string | null;
+  people: string[];
+  location: string | null;
   createdAt: string;
 }
 
@@ -40,7 +44,9 @@ export default function Gallery({ photos, tags }: GalleryProps) {
         (p) =>
           p.title.toLowerCase().includes(q) ||
           p.description?.toLowerCase().includes(q) ||
-          p.tags.some((t) => t.toLowerCase().includes(q))
+          p.tags.some((t) => t.toLowerCase().includes(q)) ||
+          p.people.some((person) => person.toLowerCase().includes(q)) ||
+          p.location?.toLowerCase().includes(q)
       );
     }
 
@@ -52,6 +58,16 @@ export default function Gallery({ photos, tags }: GalleryProps) {
       if (sort === "oldest")
         return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
       if (sort === "title") return a.title.localeCompare(b.title);
+      if (sort === "date_newest") {
+        const da = parseDateForSort(a.date);
+        const db = parseDateForSort(b.date);
+        return da === db ? 0 : da === Infinity ? 1 : db === Infinity ? -1 : db - da;
+      }
+      if (sort === "date_oldest") {
+        const da = parseDateForSort(a.date);
+        const db = parseDateForSort(b.date);
+        return da === db ? 0 : da === Infinity ? 1 : db === Infinity ? -1 : da - db;
+      }
       return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
     });
   }, [photos, search, selectedTag, sort]);
@@ -71,8 +87,10 @@ export default function Gallery({ photos, tags }: GalleryProps) {
             onChange={(e) => setSort(e.target.value)}
             className="rounded-lg border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-900 dark:border-zinc-700 dark:bg-zinc-900 dark:text-white"
           >
-            <option value="newest">Newest first</option>
-            <option value="oldest">Oldest first</option>
+            <option value="newest">Upload newest</option>
+            <option value="oldest">Upload oldest</option>
+            <option value="date_newest">Photo date (newest)</option>
+            <option value="date_oldest">Photo date (oldest)</option>
             <option value="title">Title A-Z</option>
           </select>
         </div>
@@ -104,6 +122,9 @@ export default function Gallery({ photos, tags }: GalleryProps) {
                 filename={photo.filename}
                 tags={photo.tags}
                 createdAt={photo.createdAt}
+                date={photo.date}
+                people={photo.people}
+                location={photo.location}
               />
             </div>
           ))}

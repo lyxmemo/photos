@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useState, useRef } from "react";
+import AutocompleteInput from "@/components/AutocompleteInput";
 
 export default function UploadPage() {
   const router = useRouter();
@@ -11,6 +12,9 @@ export default function UploadPage() {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [tagsInput, setTagsInput] = useState("");
+  const [dateInput, setDateInput] = useState("");
+  const [peopleInput, setPeopleInput] = useState("");
+  const [locationInput, setLocationInput] = useState("");
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState("");
   const [dragActive, setDragActive] = useState(false);
@@ -50,11 +54,23 @@ export default function UploadPage() {
         .split(",")
         .map((t) => t.trim())
         .filter(Boolean);
+      const people = peopleInput
+        .split(",")
+        .map((t) => t.trim())
+        .filter(Boolean);
 
       const photoRes = await fetch("/api/photos", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ title, description, filename, tags }),
+        body: JSON.stringify({
+          title,
+          description,
+          filename,
+          tags,
+          date: dateInput || null,
+          people,
+          location: locationInput || null,
+        }),
       });
 
       if (!photoRes.ok) throw new Error("Failed to create photo");
@@ -164,6 +180,49 @@ export default function UploadPage() {
             value={tagsInput}
             onChange={(e) => setTagsInput(e.target.value)}
             placeholder="Comma-separated, e.g. nature, sunset, landscape"
+            className="mt-1 block w-full rounded-lg border border-zinc-300 px-3 py-2 text-sm text-zinc-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-zinc-700 dark:bg-zinc-900 dark:text-white"
+          />
+        </div>
+
+        <div>
+          <label htmlFor="date" className="block text-sm font-medium text-zinc-700 dark:text-zinc-300">
+            Date
+          </label>
+          <input
+            id="date"
+            type="text"
+            value={dateInput}
+            onChange={(e) => setDateInput(e.target.value)}
+            placeholder="e.g. 1946, 1946-01, 1946-01-01"
+            className="mt-1 block w-full rounded-lg border border-zinc-300 px-3 py-2 text-sm text-zinc-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-zinc-700 dark:bg-zinc-900 dark:text-white"
+          />
+        </div>
+
+        <div>
+          <label htmlFor="people" className="block text-sm font-medium text-zinc-700 dark:text-zinc-300">
+            People
+          </label>
+          <AutocompleteInput
+            id="people"
+            value={peopleInput}
+            onChange={setPeopleInput}
+            suggestUrl="/api/people"
+            placeholder="Comma-separated, e.g. John, Jane"
+            multiValue
+            className="mt-1 block w-full rounded-lg border border-zinc-300 px-3 py-2 text-sm text-zinc-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-zinc-700 dark:bg-zinc-900 dark:text-white"
+          />
+        </div>
+
+        <div>
+          <label htmlFor="location" className="block text-sm font-medium text-zinc-700 dark:text-zinc-300">
+            Location
+          </label>
+          <AutocompleteInput
+            id="location"
+            value={locationInput}
+            onChange={setLocationInput}
+            suggestUrl="/api/locations"
+            placeholder="e.g. Beijing"
             className="mt-1 block w-full rounded-lg border border-zinc-300 px-3 py-2 text-sm text-zinc-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-zinc-700 dark:bg-zinc-900 dark:text-white"
           />
         </div>
