@@ -1,9 +1,9 @@
 import { getPhotos, getAllTags } from "@/lib/data";
-import Gallery from "@/components/Gallery";
+import GalleryShell from "@/components/GalleryShell";
 
 export default function Home() {
   const photos = getPhotos();
   const tags = getAllTags();
 
-  return <Gallery photos={photos} tags={tags} />;
+  return <GalleryShell photos={photos} tags={tags} />;
 }
