@@ -1,51 +1,69 @@
 "use client";
 
-import Image from "next/image";
+import { useState } from "react";
 
 interface PhotoCardProps {
   title: string;
   filename: string;
   tags: string[];
-  createdAt: string;
   date?: string | null;
   people?: string[];
   location?: string | null;
 }
 
-export default function PhotoCard({ title, filename, tags, createdAt, date, people, location }: PhotoCardProps) {
+const basePath = process.env.NEXT_PUBLIC_BASE_PATH || "";
+
+export default function PhotoCard({ title, filename, tags, date, people, location }: PhotoCardProps) {
+  const [loaded, setLoaded] = useState(false);
+
   return (
-    <div className="group block overflow-hidden rounded-xl border border-zinc-200 bg-white transition hover:shadow-lg dark:border-zinc-800 dark:bg-zinc-950">
-      <div className="relative aspect-square overflow-hidden bg-zinc-100 dark:bg-zinc-900">
-        <Image
-          src={`${process.env.NEXT_PUBLIC_BASE_PATH || ""}/images/${filename}`}
+    <div className="group overflow-hidden rounded-xl bg-white shadow-sm transition-shadow duration-300 hover:shadow-lg dark:bg-zinc-900">
+      {/* Image — native img for natural aspect ratio in masonry */}
+      <div className="relative overflow-hidden">
+        <img
+          src={`${basePath}/images/${filename}`}
           alt={title}
-          fill
-          className="object-cover transition-transform group-hover:scale-105"
-          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+          loading="lazy"
+          onLoad={() => setLoaded(true)}
+          className={`w-full transition-all duration-500 group-hover:scale-[1.03] ${
+            loaded ? "opacity-100" : "opacity-0"
+          }`}
         />
+        {!loaded && (
+          <div className="absolute inset-0 animate-pulse bg-zinc-200 dark:bg-zinc-800" />
+        )}
       </div>
-      <div className="p-3">
-        <h3 className="truncate font-medium text-zinc-900 dark:text-white">{title}</h3>
-        <p className="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
-          {date || new Date(createdAt).toLocaleDateString()}
-        </p>
-        {(location || (people && people.length > 0)) && (
+
+      {/* Info */}
+      <div className="px-3 py-2.5">
+        <h3 className="text-sm font-semibold leading-snug text-zinc-800 dark:text-zinc-100">
+          {title}
+        </h3>
+        <div className="mt-1 flex items-center gap-1.5 text-xs text-zinc-400 dark:text-zinc-500">
+          {date && <span>{date}</span>}
+          {date && location && <span>·</span>}
+          {location && <span>{location}</span>}
+        </div>
+        {people && people.length > 0 && (
           <p className="mt-0.5 truncate text-xs text-zinc-400 dark:text-zinc-500">
-            {[location, people && people.length > 0 ? people.join(", ") : null]
-              .filter(Boolean)
-              .join(" · ")}
+            {people.join(", ")}
           </p>
         )}
         {tags.length > 0 && (
           <div className="mt-2 flex flex-wrap gap-1">
-            {tags.map((tag) => (
+            {tags.slice(0, 3).map((tag) => (
               <span
                 key={tag}
-                className="inline-block rounded-full bg-zinc-100 px-2 py-0.5 text-xs text-zinc-600 dark:bg-zinc-800 dark:text-zinc-400"
+                className="rounded-full bg-zinc-100 px-2 py-0.5 text-[11px] text-zinc-500 dark:bg-zinc-800 dark:text-zinc-400"
               >
                 {tag}
               </span>
             ))}
+            {tags.length > 3 && (
+              <span className="rounded-full bg-zinc-100 px-2 py-0.5 text-[11px] text-zinc-400 dark:bg-zinc-800 dark:text-zinc-500">
+                +{tags.length - 3}
+              </span>
+            )}
           </div>
         )}
       </div>

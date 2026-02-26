@@ -16,3 +16,70 @@ body {
   background: var(--background);
   color: var(--foreground);
 }
+
+/* Masonry layout */
+.masonry {
+  columns: 2;
+  column-gap: 10px;
+}
+@media (min-width: 640px) {
+  .masonry {
+    columns: 3;
+    column-gap: 14px;
+  }
+}
+@media (min-width: 1024px) {
+  .masonry {
+    columns: 4;
+    column-gap: 16px;
+  }
+}
+
+.masonry-item {
+  break-inside: avoid;
+  margin-bottom: 10px;
+}
+@media (min-width: 640px) {
+  .masonry-item {
+    margin-bottom: 14px;
+  }
+}
+@media (min-width: 1024px) {
+  .masonry-item {
+    margin-bottom: 16px;
+  }
+}
+
+/* Photo fade-in on load */
+.photo-fade {
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+.photo-fade.loaded {
+  opacity: 1;
+}
+
+/* Hide scrollbar for tag filter */
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* Modal entrance */
+.modal-backdrop {
+  animation: fadeIn 0.2s ease;
+}
+.modal-content {
+  animation: slideUp 0.25s ease;
+}
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(24px) scale(0.97); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
