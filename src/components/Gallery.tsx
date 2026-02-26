@@ -147,10 +147,6 @@ export default function Gallery({ photos, tags }: GalleryProps) {
                 <PhotoCard
                   title={photo.title}
                   filename={photo.filename}
-                  tags={photo.tags}
-                  date={photo.date}
-                  people={photo.people}
-                  location={photo.location}
                 />
               </div>
             ))}
