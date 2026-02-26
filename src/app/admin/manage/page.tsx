@@ -80,22 +80,22 @@ export default function ManagePage() {
   };
 
   const deletePhoto = async (id: string) => {
-    if (!confirm("Are you sure you want to delete this photo?")) return;
+    if (!confirm("确定要删除这张照片吗？")) return;
 
     await fetch(`/api/photos/${id}`, { method: "DELETE" });
     fetchPhotos();
   };
 
   if (loading) {
-    return <div className="py-20 text-center text-zinc-500">Loading...</div>;
+    return <div className="py-20 text-center text-zinc-500">加载中...</div>;
   }
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-bold text-zinc-900 dark:text-white">Manage Photos</h1>
+      <h1 className="text-2xl font-bold text-zinc-900 dark:text-white">管理照片</h1>
 
       {photos.length === 0 ? (
-        <p className="py-10 text-center text-zinc-500">No photos to manage.</p>
+        <p className="py-10 text-center text-zinc-500">暂无照片可管理。</p>
       ) : (
         <div className="space-y-4">
           {photos.map((photo) => (
@@ -119,37 +119,37 @@ export default function ManagePage() {
                     value={editTitle}
                     onChange={(e) => setEditTitle(e.target.value)}
                     className="rounded border border-zinc-300 px-2 py-1 text-sm dark:border-zinc-700 dark:bg-zinc-800 dark:text-white"
-                    placeholder="Title"
+                    placeholder="标题"
                   />
                   <input
                     value={editDescription}
                     onChange={(e) => setEditDescription(e.target.value)}
                     className="rounded border border-zinc-300 px-2 py-1 text-sm dark:border-zinc-700 dark:bg-zinc-800 dark:text-white"
-                    placeholder="Description"
+                    placeholder="描述"
                   />
                   <input
                     value={editTags}
                     onChange={(e) => setEditTags(e.target.value)}
                     className="rounded border border-zinc-300 px-2 py-1 text-sm dark:border-zinc-700 dark:bg-zinc-800 dark:text-white"
-                    placeholder="Tags (comma-separated)"
+                    placeholder="标签（逗号分隔）"
                   />
                   <input
                     value={editDate}
                     onChange={(e) => setEditDate(e.target.value)}
                     className="rounded border border-zinc-300 px-2 py-1 text-sm dark:border-zinc-700 dark:bg-zinc-800 dark:text-white"
-                    placeholder="Date (e.g. 1946, 1946-01, 1946-01-01)"
+                    placeholder="日期（如 1946, 1946-01, 1946-01-01）"
                   />
                   <input
                     value={editPeople}
                     onChange={(e) => setEditPeople(e.target.value)}
                     className="rounded border border-zinc-300 px-2 py-1 text-sm dark:border-zinc-700 dark:bg-zinc-800 dark:text-white"
-                    placeholder="People (comma-separated)"
+                    placeholder="人物（逗号分隔）"
                   />
                   <input
                     value={editLocation}
                     onChange={(e) => setEditLocation(e.target.value)}
                     className="rounded border border-zinc-300 px-2 py-1 text-sm dark:border-zinc-700 dark:bg-zinc-800 dark:text-white"
-                    placeholder="Location"
+                    placeholder="地点"
                   />
                   <div className="flex gap-2">
                     <button
@@ -157,13 +157,13 @@ export default function ManagePage() {
                       disabled={saving}
                       className="rounded bg-blue-600 px-3 py-1 text-xs font-medium text-white hover:bg-blue-700 disabled:opacity-50"
                     >
-                      {saving ? "Saving..." : "Save"}
+                      {saving ? "保存中..." : "保存"}
                     </button>
                     <button
                       onClick={() => setEditingId(null)}
                       className="rounded bg-zinc-200 px-3 py-1 text-xs font-medium text-zinc-700 hover:bg-zinc-300 dark:bg-zinc-700 dark:text-zinc-300"
                     >
-                      Cancel
+                      取消
                     </button>
                   </div>
                 </div>
@@ -203,13 +203,13 @@ export default function ManagePage() {
                       onClick={() => startEdit(photo)}
                       className="rounded bg-zinc-100 px-3 py-1.5 text-xs font-medium text-zinc-700 hover:bg-zinc-200 dark:bg-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-700"
                     >
-                      Edit
+                      编辑
                     </button>
                     <button
                       onClick={() => deletePhoto(photo.id)}
                       className="rounded bg-red-50 px-3 py-1.5 text-xs font-medium text-red-600 hover:bg-red-100 dark:bg-red-900/20 dark:text-red-400 dark:hover:bg-red-900/30"
                     >
-                      Delete
+                      删除
                     </button>
                   </div>
                 </div>

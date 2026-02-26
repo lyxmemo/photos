@@ -345,7 +345,7 @@ export default function NetworkView({ photos }: { photos: Photo[] }) {
       </div>
 
       <p className="text-center text-xs text-zinc-400 dark:text-zinc-500">
-        Click a line to see shared photos · Hover a name to highlight connections
+        点击连线查看共同照片 · 悬停姓名高亮关系
       </p>
 
       {/* Detail panel: photos for selected edge or person */}
@@ -354,7 +354,7 @@ export default function NetworkView({ photos }: { photos: Photo[] }) {
           <h3 className="mb-3 text-sm font-semibold text-zinc-700 dark:text-zinc-300">
             {detailTitle}
             <span className="ml-2 text-xs font-normal text-zinc-400">
-              {detailPhotos.length} photo{detailPhotos.length > 1 ? "s" : ""}
+              {detailPhotos.length} 张照片
             </span>
           </h3>
           <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-4">

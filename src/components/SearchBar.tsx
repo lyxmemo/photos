@@ -31,7 +31,7 @@ export default function SearchBar({ onSearch, initialValue = "" }: SearchBarProp
       </svg>
       <input
         type="text"
-        placeholder="Search photos..."
+        placeholder="搜索照片..."
         value={query}
         onChange={(e) => setQuery(e.target.value)}
         className="h-10 w-full rounded-full border border-zinc-200 bg-white pl-9 pr-4 text-sm text-zinc-700 placeholder-zinc-400 outline-none transition focus:border-zinc-400 focus:shadow-sm dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-200 dark:placeholder-zinc-500 dark:focus:border-zinc-500"

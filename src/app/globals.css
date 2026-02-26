@@ -38,6 +38,8 @@ body {
 .masonry-item {
   break-inside: avoid;
   margin-bottom: 10px;
+  transform: translateZ(0);
+  backface-visibility: hidden;
 }
 @media (min-width: 640px) {
   .masonry-item {

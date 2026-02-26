@@ -116,10 +116,10 @@ export default function Gallery({ photos, tags }: GalleryProps) {
           onChange={(e) => setSort(e.target.value)}
           className="h-10 rounded-full border border-zinc-200 bg-white px-4 text-sm text-zinc-700 outline-none transition focus:border-zinc-400 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-300 dark:focus:border-zinc-500"
         >
-          <option value="date_newest">Newest first</option>
-          <option value="date_oldest">Oldest first</option>
-          <option value="newest">Recently added</option>
-          <option value="title">Title A-Z</option>
+          <option value="date_newest">最新拍摄</option>
+          <option value="date_oldest">最早拍摄</option>
+          <option value="newest">最近添加</option>
+          <option value="title">标题排序</option>
         </select>
       </div>
 
@@ -130,10 +130,10 @@ export default function Gallery({ photos, tags }: GalleryProps) {
       {/* Masonry grid */}
       {filteredPhotos.length === 0 ? (
         <div className="py-24 text-center text-zinc-400 dark:text-zinc-500">
-          No photos found.{" "}
+          未找到照片。{" "}
           {search || selectedTag
-            ? "Try adjusting your filters."
-            : "Upload some photos to get started!"}
+            ? "试试调整筛选条件。"
+            : "上传一些照片开始吧！"}
         </div>
       ) : (
         <>
