@@ -84,7 +84,7 @@ export default function UploadPage() {
 
   return (
     <div className="mx-auto max-w-2xl space-y-6">
-      <h1 className="text-2xl font-bold text-zinc-900 dark:text-white">Upload Photo</h1>
+      <h1 className="text-2xl font-bold text-zinc-900 dark:text-white">上传照片</h1>
 
       <form onSubmit={handleSubmit} className="space-y-6">
         {error && (
@@ -126,9 +126,9 @@ export default function UploadPage() {
                 />
               </svg>
               <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
-                Drag & drop an image, or click to browse
+                拖放图片，或点击浏览
               </p>
-              <p className="mt-1 text-xs text-zinc-400">JPEG, PNG, WebP, GIF</p>
+              <p className="mt-1 text-xs text-zinc-400">支持 JPEG、PNG、WebP、GIF</p>
             </div>
           )}
           <input
@@ -145,7 +145,7 @@ export default function UploadPage() {
 
         <div>
           <label htmlFor="title" className="block text-sm font-medium text-zinc-700 dark:text-zinc-300">
-            Title *
+            标题 *
           </label>
           <input
             id="title"
@@ -159,7 +159,7 @@ export default function UploadPage() {
 
         <div>
           <label htmlFor="description" className="block text-sm font-medium text-zinc-700 dark:text-zinc-300">
-            Description
+            描述
           </label>
           <textarea
             id="description"
@@ -172,42 +172,42 @@ export default function UploadPage() {
 
         <div>
           <label htmlFor="tags" className="block text-sm font-medium text-zinc-700 dark:text-zinc-300">
-            Tags
+            标签
           </label>
           <input
             id="tags"
             type="text"
             value={tagsInput}
             onChange={(e) => setTagsInput(e.target.value)}
-            placeholder="Comma-separated, e.g. nature, sunset, landscape"
+            placeholder="逗号分隔，如 自然, 日落, 风景"
             className="mt-1 block w-full rounded-lg border border-zinc-300 px-3 py-2 text-sm text-zinc-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-zinc-700 dark:bg-zinc-900 dark:text-white"
           />
         </div>
 
         <div>
           <label htmlFor="date" className="block text-sm font-medium text-zinc-700 dark:text-zinc-300">
-            Date
+            日期
           </label>
           <input
             id="date"
             type="text"
             value={dateInput}
             onChange={(e) => setDateInput(e.target.value)}
-            placeholder="e.g. 1946, 1946-01, 1946-01-01"
+            placeholder="如 1946, 1946-01, 1946-01-01"
             className="mt-1 block w-full rounded-lg border border-zinc-300 px-3 py-2 text-sm text-zinc-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-zinc-700 dark:bg-zinc-900 dark:text-white"
           />
         </div>
 
         <div>
           <label htmlFor="people" className="block text-sm font-medium text-zinc-700 dark:text-zinc-300">
-            People
+            人物
           </label>
           <AutocompleteInput
             id="people"
             value={peopleInput}
             onChange={setPeopleInput}
             suggestUrl="/api/people"
-            placeholder="Comma-separated, e.g. John, Jane"
+            placeholder="逗号分隔，如 张三, 李四"
             multiValue
             className="mt-1 block w-full rounded-lg border border-zinc-300 px-3 py-2 text-sm text-zinc-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-zinc-700 dark:bg-zinc-900 dark:text-white"
           />
@@ -215,14 +215,14 @@ export default function UploadPage() {
 
         <div>
           <label htmlFor="location" className="block text-sm font-medium text-zinc-700 dark:text-zinc-300">
-            Location
+            地点
           </label>
           <AutocompleteInput
             id="location"
             value={locationInput}
             onChange={setLocationInput}
             suggestUrl="/api/locations"
-            placeholder="e.g. Beijing"
+            placeholder="如 北京"
             className="mt-1 block w-full rounded-lg border border-zinc-300 px-3 py-2 text-sm text-zinc-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-zinc-700 dark:bg-zinc-900 dark:text-white"
           />
         </div>
@@ -232,7 +232,7 @@ export default function UploadPage() {
           disabled={!file || !title || uploading}
           className="w-full rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-50"
         >
-          {uploading ? "Uploading..." : "Upload Photo"}
+          {uploading ? "上传中..." : "上传照片"}
         </button>
       </form>
     </div>

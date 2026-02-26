@@ -22,7 +22,7 @@ export default function TagFilter({ tags, selectedTag, onSelectTag }: TagFilterP
             : "bg-zinc-100 text-zinc-600 hover:bg-zinc-200 dark:bg-zinc-800 dark:text-zinc-400 dark:hover:bg-zinc-700"
         }`}
       >
-        All
+        全部
       </button>
       {tags.map((tag) => (
         <button

@@ -122,7 +122,7 @@ export default function TimelineView({ photos }: { photos: Photo[] }) {
       {/* End marker */}
       <div className="relative flex items-center sm:justify-center">
         <div className="ml-2 rounded-full bg-zinc-300 px-3 py-1 text-xs text-zinc-500 dark:bg-zinc-700 dark:text-zinc-400 sm:ml-0">
-          End
+          终
         </div>
       </div>
 

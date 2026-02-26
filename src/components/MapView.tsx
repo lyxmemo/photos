@@ -155,7 +155,7 @@ export default function MapView({ photos }: { photos: Photo[] }) {
           <h3 className="mb-3 text-sm font-semibold text-zinc-700 dark:text-zinc-300">
             {LOCATION_COORDS[selectedLocation]?.label || selectedLocation}
             <span className="ml-2 text-xs font-normal text-zinc-400">
-              {selectedPhotos.length} photos
+              {selectedPhotos.length} 张照片
             </span>
           </h3>
           <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-4">

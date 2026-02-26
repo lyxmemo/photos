@@ -29,7 +29,7 @@ export default async function PhotoDetailPage({
         <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
         </svg>
-        Back to gallery
+        返回相册
       </Link>
 
       <div className="overflow-hidden rounded-2xl border border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-900">
@@ -57,13 +57,13 @@ export default async function PhotoDetailPage({
 
           {photo.location && (
             <p className="mt-2 text-sm text-zinc-500 dark:text-zinc-400">
-              Location: {photo.location}
+              地点：{photo.location}
             </p>
           )}
 
           {photo.people.length > 0 && (
             <p className="mt-2 text-sm text-zinc-500 dark:text-zinc-400">
-              People: {photo.people.join(", ")}
+              人物：{photo.people.join("、")}
             </p>
           )}
 
