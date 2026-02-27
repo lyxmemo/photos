@@ -23,12 +23,11 @@ const WATERMARK_SITE = "@lyxmemo.github.io/photos";
 export default function PhotoModal({ photo, onClose }: PhotoModalProps) {
   const [saving, setSaving] = useState(false);
 
-  // Build watermark lines (shared between overlay and canvas save)
+  // Watermark: only short metadata + site, no description
   const watermarkLines: string[] = [];
   if (photo.date) watermarkLines.push(photo.date);
   if (photo.location) watermarkLines.push(photo.location);
   if (photo.people && photo.people.length > 0) watermarkLines.push(photo.people.join("、"));
-  if (photo.description) watermarkLines.push(photo.description);
   watermarkLines.push(WATERMARK_SITE);
 
   useEffect(() => {
@@ -190,6 +189,13 @@ export default function PhotoModal({ photo, onClose }: PhotoModalProps) {
             </div>
           </div>
         </div>
+
+        {/* Description below image */}
+        {photo.description && (
+          <div className="bg-zinc-900 px-4 py-3 sm:px-5">
+            <p className="text-sm leading-relaxed text-zinc-300">{photo.description}</p>
+          </div>
+        )}
       </div>
     </div>
   );
