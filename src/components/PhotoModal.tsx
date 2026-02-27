@@ -23,12 +23,11 @@ const WATERMARK_SITE = "@lyxmemo.github.io/photos";
 export default function PhotoModal({ photo, onClose }: PhotoModalProps) {
   const [saving, setSaving] = useState(false);
 
-  // Watermark: only short metadata + site, no description
-  const watermarkLines: string[] = [];
-  if (photo.date) watermarkLines.push(photo.date);
-  if (photo.location) watermarkLines.push(photo.location);
-  if (photo.people && photo.people.length > 0) watermarkLines.push(photo.people.join("、"));
-  watermarkLines.push(WATERMARK_SITE);
+  // Info lines for the bar below image
+  const infoItems: string[] = [];
+  if (photo.date) infoItems.push(photo.date);
+  if (photo.location) infoItems.push(photo.location);
+  if (photo.people && photo.people.length > 0) infoItems.push(photo.people.join("、"));
 
   useEffect(() => {
     const handleEsc = (e: KeyboardEvent) => {
@@ -53,62 +52,69 @@ export default function PhotoModal({ photo, onClose }: PhotoModalProps) {
         img.onerror = () => reject(new Error("Failed to load image"));
       });
 
-      const canvas = document.createElement("canvas");
-      canvas.width = img.naturalWidth;
-      canvas.height = img.naturalHeight;
-      const ctx = canvas.getContext("2d")!;
-      ctx.drawImage(img, 0, 0);
+      const imgW = img.naturalWidth;
+      const imgH = img.naturalHeight;
 
-      // Font sizing relative to image
-      const fontSize = Math.max(14, Math.round(canvas.width * 0.018));
-      const lineHeight = fontSize * 1.5;
-      const padding = Math.round(canvas.width * 0.025);
+      // Font sizing relative to image width
+      const fontSize = Math.max(14, Math.round(imgW * 0.018));
+      const smallFontSize = Math.round(fontSize * 0.85);
+      const padding = Math.round(imgW * 0.025);
+      const lineHeight = fontSize * 1.6;
+      const fontFamily = '"PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif';
 
-      ctx.font = `${fontSize}px "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif`;
-      ctx.textAlign = "right";
-      ctx.textBaseline = "bottom";
+      // Build text lines for the bottom bar
+      const lines: { text: string; small?: boolean }[] = [];
+      // Meta line: date · location · people
+      const metaParts: string[] = [];
+      if (photo.date) metaParts.push(photo.date);
+      if (photo.location) metaParts.push(photo.location);
+      if (photo.people && photo.people.length > 0) metaParts.push(photo.people.join("、"));
+      if (metaParts.length > 0) lines.push({ text: metaParts.join("  ·  ") });
+      // Description (may be multi-line, wrap manually)
+      if (photo.description) {
+        const descLines = wrapText(photo.description, imgW - padding * 2, fontSize, fontFamily);
+        for (const dl of descLines) lines.push({ text: dl });
+      }
+      // Site
+      lines.push({ text: WATERMARK_SITE, small: true });
 
-      // Measure max width for background
-      let maxWidth = 0;
-      for (const line of watermarkLines) {
-        const m = ctx.measureText(line);
-        if (m.width > maxWidth) maxWidth = m.width;
+      // Calculate bar height
+      const barPadY = padding * 0.7;
+      let barHeight = barPadY * 2;
+      for (const l of lines) {
+        barHeight += l.small ? smallFontSize * 1.6 : lineHeight;
       }
 
-      // Draw semi-transparent background
-      const bgPadX = padding * 0.8;
-      const bgPadY = padding * 0.5;
-      const bgWidth = maxWidth + bgPadX * 2;
-      const bgHeight = watermarkLines.length * lineHeight + bgPadY * 2;
-      const bgX = canvas.width - padding - bgWidth;
-      const bgY = canvas.height - padding - bgHeight;
+      // Create canvas: image + bar
+      const canvas = document.createElement("canvas");
+      canvas.width = imgW;
+      canvas.height = imgH + barHeight;
+      const ctx = canvas.getContext("2d")!;
 
-      ctx.fillStyle = "rgba(0, 0, 0, 0.35)";
-      const radius = fontSize * 0.4;
-      ctx.beginPath();
-      ctx.moveTo(bgX + radius, bgY);
-      ctx.lineTo(bgX + bgWidth - radius, bgY);
-      ctx.quadraticCurveTo(bgX + bgWidth, bgY, bgX + bgWidth, bgY + radius);
-      ctx.lineTo(bgX + bgWidth, bgY + bgHeight - radius);
-      ctx.quadraticCurveTo(bgX + bgWidth, bgY + bgHeight, bgX + bgWidth - radius, bgY + bgHeight);
-      ctx.lineTo(bgX + radius, bgY + bgHeight);
-      ctx.quadraticCurveTo(bgX, bgY + bgHeight, bgX, bgY + bgHeight - radius);
-      ctx.lineTo(bgX, bgY + radius);
-      ctx.quadraticCurveTo(bgX, bgY, bgX + radius, bgY);
-      ctx.closePath();
-      ctx.fill();
+      // Draw image
+      ctx.drawImage(img, 0, 0);
 
-      // Draw text lines
-      ctx.fillStyle = "rgba(255, 255, 255, 0.9)";
-      const textX = canvas.width - padding - bgPadX;
-      const textStartY = bgY + bgPadY + lineHeight * 0.75;
+      // Draw bottom bar background
+      ctx.fillStyle = "#1a1a1a";
+      ctx.fillRect(0, imgH, imgW, barHeight);
 
-      for (let i = 0; i < watermarkLines.length; i++) {
-        if (i === watermarkLines.length - 1) {
-          ctx.fillStyle = "rgba(255, 255, 255, 0.55)";
-          ctx.font = `${Math.round(fontSize * 0.85)}px "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif`;
+      // Draw text
+      ctx.textAlign = "left";
+      ctx.textBaseline = "top";
+      let y = imgH + barPadY;
+      for (const l of lines) {
+        if (l.small) {
+          ctx.font = `${smallFontSize}px ${fontFamily}`;
+          ctx.fillStyle = "rgba(255, 255, 255, 0.45)";
+          const currentLineH = smallFontSize * 1.6;
+          ctx.fillText(l.text, padding, y);
+          y += currentLineH;
+        } else {
+          ctx.font = `${fontSize}px ${fontFamily}`;
+          ctx.fillStyle = "rgba(255, 255, 255, 0.85)";
+          ctx.fillText(l.text, padding, y);
+          y += lineHeight;
         }
-        ctx.fillText(watermarkLines[i], textX, textStartY + i * lineHeight);
       }
 
       // Download
@@ -131,7 +137,7 @@ export default function PhotoModal({ photo, onClose }: PhotoModalProps) {
     } finally {
       setSaving(false);
     }
-  }, [photo, watermarkLines]);
+  }, [photo]);
 
   return (
     <div
@@ -164,39 +170,59 @@ export default function PhotoModal({ photo, onClose }: PhotoModalProps) {
           </button>
         </div>
 
-        {/* Image with watermark overlay */}
-        <div className="relative flex items-center justify-center bg-black">
+        {/* Image — clean, no overlay */}
+        <div className="flex items-center justify-center bg-black">
           <img
             src={`${basePath}/images/${photo.filename}`}
             alt={photo.title}
-            className="max-h-[85vh] w-full object-contain"
+            className="max-h-[75vh] w-full object-contain"
           />
-          {/* Watermark overlay — always visible, screenshot-proof */}
-          <div className="pointer-events-none absolute bottom-0 right-0 p-2.5 sm:p-4">
-            <div className="rounded-lg bg-black/30 px-2.5 py-1.5 text-right backdrop-blur-[2px] sm:px-3 sm:py-2">
-              {watermarkLines.map((line, i) => (
-                <p
-                  key={i}
-                  className={`leading-snug ${
-                    i === watermarkLines.length - 1
-                      ? "text-[10px] text-white/50 sm:text-xs"
-                      : "text-[10px] text-white/85 sm:text-xs"
-                  }`}
-                >
-                  {line}
-                </p>
-              ))}
-            </div>
-          </div>
         </div>
 
-        {/* Description below image */}
-        {photo.description && (
-          <div className="bg-zinc-900 px-4 py-3 sm:px-5">
-            <p className="text-sm leading-relaxed text-zinc-300">{photo.description}</p>
-          </div>
-        )}
+        {/* Info bar below image */}
+        <div className="bg-zinc-900 px-4 py-3 sm:px-5">
+          {infoItems.length > 0 && (
+            <p className="text-xs leading-relaxed text-zinc-400 sm:text-sm">
+              {infoItems.join("  ·  ")}
+            </p>
+          )}
+          {photo.description && (
+            <p className={`text-sm leading-relaxed text-zinc-300 ${infoItems.length > 0 ? "mt-1" : ""}`}>
+              {photo.description}
+            </p>
+          )}
+          <p className={`text-[10px] text-zinc-600 sm:text-xs ${photo.description || infoItems.length > 0 ? "mt-1.5" : ""}`}>
+            {WATERMARK_SITE}
+          </p>
+        </div>
       </div>
     </div>
   );
+}
+
+/** Wrap text into lines that fit within maxWidth on a canvas */
+function wrapText(text: string, maxWidth: number, fontSize: number, fontFamily: string): string[] {
+  const canvas = document.createElement("canvas");
+  const ctx = canvas.getContext("2d")!;
+  ctx.font = `${fontSize}px ${fontFamily}`;
+
+  const result: string[] = [];
+  for (const paragraph of text.split("\n")) {
+    if (paragraph === "") {
+      result.push("");
+      continue;
+    }
+    let line = "";
+    for (const char of paragraph) {
+      const test = line + char;
+      if (ctx.measureText(test).width > maxWidth && line.length > 0) {
+        result.push(line);
+        line = char;
+      } else {
+        line = test;
+      }
+    }
+    if (line) result.push(line);
+  }
+  return result;
 }
