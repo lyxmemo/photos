@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import PhotoCard from "@/components/PhotoCard";
 import PhotoModal from "@/components/PhotoModal";
 import SearchBar from "@/components/SearchBar";
@@ -29,15 +29,11 @@ interface GalleryProps {
   tags: Tag[];
 }
 
-const BATCH = 12;
-
 export default function Gallery({ photos, tags }: GalleryProps) {
   const [search, setSearch] = useState("");
   const [selectedTag, setSelectedTag] = useState("");
   const [sort, setSort] = useState("date_newest");
   const [selectedPhoto, setSelectedPhoto] = useState<Photo | null>(null);
-  const [displayCount, setDisplayCount] = useState(BATCH);
-  const sentinelRef = useRef<HTMLDivElement>(null);
 
   const filteredPhotos = useMemo(() => {
     let result = photos;
@@ -76,30 +72,6 @@ export default function Gallery({ photos, tags }: GalleryProps) {
     });
   }, [photos, search, selectedTag, sort]);
 
-  // Reset display count when filters change
-  useEffect(() => {
-    setDisplayCount(BATCH);
-  }, [search, selectedTag, sort]);
-
-  // Infinite scroll via IntersectionObserver
-  useEffect(() => {
-    const sentinel = sentinelRef.current;
-    if (!sentinel) return;
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setDisplayCount((prev) => Math.min(prev + BATCH, filteredPhotos.length));
-        }
-      },
-      { rootMargin: "400px" }
-    );
-    observer.observe(sentinel);
-    return () => observer.disconnect();
-  }, [filteredPhotos.length]);
-
-  const visiblePhotos = filteredPhotos.slice(0, displayCount);
-  const hasMore = displayCount < filteredPhotos.length;
-
   const handleSearch = useCallback((q: string) => {
     setSearch(q);
   }, []);
@@ -136,31 +108,20 @@ export default function Gallery({ photos, tags }: GalleryProps) {
             : "上传一些照片开始吧！"}
         </div>
       ) : (
-        <>
-          <div className="masonry">
-            {visiblePhotos.map((photo) => (
-              <div
-                key={photo.id}
-                className="masonry-item cursor-pointer"
-                onClick={() => setSelectedPhoto(photo)}
-              >
-                <PhotoCard
-                  title={photo.title}
-                  filename={photo.filename}
-                />
-              </div>
-            ))}
-          </div>
-
-          {/* Infinite scroll sentinel */}
-          <div ref={sentinelRef} className="h-px" />
-
-          {hasMore && (
-            <div className="flex justify-center py-8">
-              <div className="h-6 w-6 animate-spin rounded-full border-2 border-zinc-300 border-t-zinc-600 dark:border-zinc-600 dark:border-t-zinc-300" />
+        <div className="masonry">
+          {filteredPhotos.map((photo) => (
+            <div
+              key={photo.id}
+              className="masonry-item cursor-pointer"
+              onClick={() => setSelectedPhoto(photo)}
+            >
+              <PhotoCard
+                title={photo.title}
+                filename={photo.filename}
+              />
             </div>
-          )}
-        </>
+          ))}
+        </div>
       )}
 
       {selectedPhoto && (
