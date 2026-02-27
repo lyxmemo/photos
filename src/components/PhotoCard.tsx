@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useCallback, useState } from "react";
 
 interface PhotoCardProps {
   title: string;
@@ -12,10 +12,18 @@ const basePath = process.env.NEXT_PUBLIC_BASE_PATH || "";
 export default function PhotoCard({ title, filename }: PhotoCardProps) {
   const [loaded, setLoaded] = useState(false);
 
+  // Use callback ref to catch already-cached images whose onLoad fired before React attached the handler
+  const imgRef = useCallback((img: HTMLImageElement | null) => {
+    if (img && img.complete && img.naturalWidth > 0) {
+      setLoaded(true);
+    }
+  }, []);
+
   return (
     <div className="group overflow-hidden rounded-lg">
       <div className="relative overflow-hidden">
         <img
+          ref={imgRef}
           src={`${basePath}/images/${filename}`}
           alt={title}
           loading="lazy"
