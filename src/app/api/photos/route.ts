@@ -49,15 +49,15 @@ export async function POST(req: NextRequest) {
   const body = await req.json();
   const { title, description, filename, tags, date, people, location } = body;
 
-  if (!title || !filename) {
+  if (!filename) {
     return NextResponse.json(
-      { error: "Title and filename are required" },
+      { error: "Filename is required" },
       { status: 400 }
     );
   }
 
   const photo = addPhoto({
-    title,
+    title: title || "",
     description: description || null,
     filename,
     tags: tags || [],
